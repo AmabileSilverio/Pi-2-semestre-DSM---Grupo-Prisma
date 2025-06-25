@@ -16,12 +16,25 @@ try {
         throw new Exception("Erro na conexão com o banco de dados: " . $conn->connect_error);
     }
 
-    $stmt = $conn->prepare("SELECT i.*, p.nome AS nome_professor FROM inscricoes_hae i JOIN professor p ON i.id_professor = p.id WHERE i.id = ?");
+    $stmt = $conn->prepare("SELECT 
+        i.*, 
+        p.nome AS nome_professor, 
+        e.id AS id_edital_real, 
+        e.titulo AS titulo_projeto, 
+        e.unidade AS projeto_unidade,
+        e.data_inicio,
+        e.data_termino
+    FROM inscricoes_hae i
+    LEFT JOIN professor p ON i.id_professor = p.id
+    LEFT JOIN editais_hae e ON i.id_edital = e.id
+    WHERE i.id = ?");
     $stmt->bind_param("i", $_GET['id']);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($row = $result->fetch_assoc()) {
+        // Para compatibilidade com o JS, envie também id_edital = id_edital_real
+        $row['id_edital'] = $row['id_edital_real'];
         echo json_encode([
             'status' => 'ok',
             'data' => $row

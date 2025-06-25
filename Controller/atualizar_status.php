@@ -22,31 +22,41 @@ try {
     
     // Adicionar campos específicos baseado no status
     if ($data['status'] === 'Aprovado') {
-        if (!isset($data['horas_aprovadas']) || !isset($data['data_inicio']) || !isset($data['data_fim'])) {
+        if (!isset($data['horas_aprovadas'])) {
             throw new Exception('Dados de aprovação incompletos');
         }
-        $query .= ", horas_aprovadas = :horas_aprovadas, data_inicio = :data_inicio, data_fim = :data_fim";
+        $query .= ", horas_aprovadas = :horas_aprovadas";
         $params[':horas_aprovadas'] = $data['horas_aprovadas'];
-        $params[':data_inicio'] = $data['data_inicio'];
-        $params[':data_fim'] = $data['data_fim'];
-        
-        // Buscar o ID do professor da inscrição
-        $stmt = $pdo->prepare("SELECT id_professor FROM inscricoes_hae WHERE id = :id");
+
+        // Buscar o ID do professor e do edital da inscrição
+        $stmt = $pdo->prepare("SELECT id_professor, id_edital FROM inscricoes_hae WHERE id = :id");
         $stmt->execute([':id' => $data['id']]);
         $inscricao = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$inscricao || !$inscricao['id_professor']) {
-            throw new Exception('ID do professor não encontrado para esta inscrição');
+
+        if (!$inscricao || !$inscricao['id_professor'] || !$inscricao['id_edital']) {
+            throw new Exception('ID do professor ou edital não encontrado para esta inscrição');
         }
-        
+
+        // Buscar as datas do edital
+        $stmt = $pdo->prepare("SELECT data_inicio, data_termino FROM editais_hae WHERE id = :id_edital");
+        $stmt->execute([':id_edital' => $inscricao['id_edital']]);
+        $edital = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$edital) {
+            throw new Exception('Edital não encontrado');
+        }
+
+        $data_inicio = $edital['data_inicio'];
+        $data_fim = $edital['data_termino'];
+
         // Inserir na tabela agenda_hae
         $stmt = $pdo->prepare("INSERT INTO agenda_hae (id_inscricao, id_professor, data_inicio, data_fim, hora_inicio, status) 
                               VALUES (:id_inscricao, :id_professor, :data_inicio, :data_fim, '08:00:00', 'Em Andamento')");
         $stmt->execute([
             ':id_inscricao' => $data['id'],
             ':id_professor' => $inscricao['id_professor'],
-            ':data_inicio' => $data['data_inicio'],
-            ':data_fim' => $data['data_fim']
+            ':data_inicio' => $data_inicio,
+            ':data_fim' => $data_fim
         ]);
     } elseif ($data['status'] === 'Rejeitado') {
         if (!isset($data['motivo_rejeicao'])) {
@@ -85,4 +95,4 @@ try {
         'status' => 'erro',
         'mensagem' => $e->getMessage()
     ]);
-} 
+}

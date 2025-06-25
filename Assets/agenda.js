@@ -34,13 +34,21 @@ function atualizarTabela(projetos) {
     }
 
     projetos.forEach(projeto => {
+        let statusClass = '';
+        if (projeto.status.toLowerCase() === 'em andamento' || projeto.status.toLowerCase() === 'em_andamento') {
+            statusClass = 'progress';
+        } else if (projeto.status.toLowerCase() === 'pendente') {
+            statusClass = 'pending';
+        } else if (projeto.status.toLowerCase() === 'concluído' || projeto.status.toLowerCase() === 'concluido') {
+            statusClass = 'done';
+        }
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${projeto.titulo_projeto}</td>
             <td>${projeto.data_inicio}</td>
-            <td>${projeto.hora_inicio}</td>
+            <td>${projeto.horario_do_dia || '-'}</td>
             <td>${projeto.data_fim}</td>
-            <td><span class="status-badge ${projeto.status.toLowerCase().replace(' ', '-')}">${projeto.status}</span></td>
+            <td><span class="status-badge ${statusClass}">${projeto.status}</span></td>
             <td>
                 <button class="btn-action" onclick="viewProjectDetails(${projeto.id})">
                     <i class="fas fa-eye"></i> Detalhes
@@ -64,19 +72,39 @@ function viewProjectDetails(id) {
                 content.innerHTML = `
                     <div class="project-info">
                         <h3>${projeto.titulo_projeto}</h3>
-                        <p><strong>Tipo HAE:</strong> ${projeto.tipo_hae}</p>
+                        <p><strong>Tipo HAE:</strong> ${formatarTipoHAE(projeto.tipo_hae)}</p>
                         <p><strong>Status:</strong> ${projeto.status}</p>
                         <p><strong>Data de Início:</strong> ${projeto.data_inicio}</p>
-                        <p><strong>Hora de Início:</strong> ${projeto.hora_inicio}</p>
                         <p><strong>Data de Término:</strong> ${projeto.data_fim}</p>
                         <p><strong>Horas Aprovadas:</strong> ${projeto.horas_aprovadas}</p>
+                        <p><strong>Horário do Dia:</strong> ${projeto.horario_do_dia}</p>
+                        <div>
+                            <strong>Horários do Projeto:</strong>
+                            <ul style="list-style: none; padding-left: 0;">
+                                ${
+                                    (() => {
+                                        let html = '';
+                                        if (projeto.horarios) {
+                                            try {
+                                                const horarios = JSON.parse(projeto.horarios);
+                                                for (const dia in horarios) {
+                                                    if (horarios[dia] && horarios[dia][0] && horarios[dia][1]) {
+                                                        html += `<li>${dia.charAt(0).toUpperCase() + dia.slice(1)}: ${horarios[dia][0]} até ${horarios[dia][1]}</li>`;
+                                                    }
+                                                }
+                                        } catch (e) {
+                                            html = '<li>Não foi possível exibir os horários.</li>';
+                                        }
+                                    } else {
+                                        html = '<li>Nenhum horário cadastrado.</li>';
+                                    }
+                                    return html;
+                                })()
+                            }
+                            </ul>
+                        </div>
                     </div>
-                    <div class="project-summary">
-                        <h4>Metodologia</h4>
-                        <p>${projeto.metodologia}</p>
-                        <h4>Descrição</h4>
-                        <p>${projeto.descricao}</p>
-                    </div>
+                   
                 `;
 
                 modal.style.display = 'flex';
@@ -221,3 +249,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function formatarTipoHAE(tipo) {
+    if (!tipo) return '';
+    return tipo.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
+

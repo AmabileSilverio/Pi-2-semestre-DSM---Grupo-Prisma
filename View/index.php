@@ -123,8 +123,7 @@
       <input type="password" id="senha" name="senha" required placeholder="Digite sua senha">
 
       <div class="checkbox-container">
-          <input type="checkbox" id="remember" name="remember">
-          <label for="remember">Lembrar-me</label>
+          
       </div>
       <input type="submit" value="Entrar"> 
 
@@ -133,5 +132,19 @@
       </div>
     </form>
   </div>
+
+        <div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+
 </body>
 </html>

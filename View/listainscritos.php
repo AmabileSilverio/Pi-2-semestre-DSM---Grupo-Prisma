@@ -17,9 +17,12 @@ if ($id_coordenador) {
 }
 
 // Buscar todos os projetos/inscrições dos professores
-$sql = "SELECT i.id, i.id_professor, p.nome AS  nome_professor, i.tipo_hae, i.status, i.anexo
-        FROM inscricoes_hae i
-        JOIN professor p ON i.id_professor = p.id";
+$sql = "SELECT 
+    i.id, i.id_professor, p.nome AS nome_professor, i.tipo_hae, i.status, i.anexo,
+    i.id_edital, e.data_inicio, e.data_termino
+FROM inscricoes_hae i
+JOIN professor p ON i.id_professor = p.id
+LEFT JOIN editais_hae e ON i.id_edital = e.id";
 $result = $conn->query($sql);
 
 $inscricoes = [];
@@ -61,10 +64,11 @@ while ($row = $result->fetch_assoc()) {
   <!-- Barra de Navegação e Busca -->
   <nav class="navbar" role="navigation" aria-label="Menu principal">
     <div class="nav-links">
-        <a href="telaprincipalc.php">Home</a>
-        <a href="listainscritos.php">Inscrições</a>
-        <a href="painelestatistico.php">Acompanhamento</a>
-        <a href="relatorios.php" class="active">Relatórios</a>
+         <a href="telaprincipalc.php">Início</a>
+      <a href="telaeditalcoordenador.php">Editais</a>
+      <a href="listainscritos.php">Inscrições</a>
+      <a href="painelestatistico.php">Acompanhamento</a>
+      <a href="relatorios.php" class="active">Relatórios</a>
       </div>
   </nav>
 
@@ -190,15 +194,6 @@ while ($row = $result->fetch_assoc()) {
                      min="00:00" max="40:00" step="1800">
             </div>
             
-            <div class="form-group">
-              <label for="startDate">Data de Início:</label>
-              <input type="date" id="startDate" name="startDate" required>
-            </div>
-            
-            <div class="form-group">
-              <label for="endDate">Data de Término:</label>
-              <input type="date" id="endDate" name="endDate" required>
-            </div>
           </form>
         </div>
         <div class="modal-footer">
@@ -283,5 +278,19 @@ while ($row = $result->fetch_assoc()) {
 
     </div>
   </footer>
+
+        <div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+
 </body>
 </html>

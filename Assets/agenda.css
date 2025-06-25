@@ -37,8 +37,8 @@
 }
 
 .status-badge.pending {
-  background-color: #fff3cd;
-  color: #856404;
+  background-color: #ffc107;
+  color: white;
 }
 
 .status-badge.approved {
@@ -47,8 +47,8 @@
 }
 
 .status-badge.progress {
-  background-color: #d4edda;
-  color: #4079a7;
+  background-color: #1976d2; /* azul */
+  color: #fff;               /* texto branco */
 }
 
 /* Botão de ação */

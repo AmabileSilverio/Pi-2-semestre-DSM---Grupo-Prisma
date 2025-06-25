@@ -17,7 +17,7 @@ if ($id_professor) {
 }
 
 // Buscar todos os projetos/inscrições dos professores
-$sql = "SELECT i.id, i.id_professor, p.nome AS nome_professor, i.tipo_hae, i.status,
+$sql = "SELECT i.id, i.id_professor, i.id_edital, p.nome AS nome_professor, i.tipo_hae, i.status,
         (SELECT COUNT(*) FROM relatorios_hae r WHERE r.id_inscricao = i.id) AS relatorio_enviado
         FROM inscricoes_hae i
         JOIN professor p ON i.id_professor = p.id
@@ -69,11 +69,10 @@ while ($row = $result->fetch_assoc()) {
   <!-- Barra de Navegação e Busca -->
   <nav class="navbar" role="navigation" aria-label="Menu principal">
     <div class="nav-links">
-      <a href="telaprincipal.php">Home</a>
-      <a href="formulario.php">Inscrições</a>
-      <a href="telaacompanhamento.php">Acompanhamento</a>
-      <a href="relatorios_professor.php" class="active">Relatórios</a>
+      <a href="telaprincipal.php">Início</a>
       <a href="telaedital.php">Edital</a>
+      <a href="telaacompanhamento.php">Inscrições</a>
+      <a href="relatorios_professor.php">Relatórios</a>
       <a href="telaagenda.php">Agenda</a>
     </div>
   </nav>
@@ -141,6 +140,7 @@ while ($row = $result->fetch_assoc()) {
                       <?php else: ?>
                         <span>Relatório enviado</span>
                       <?php endif; ?>
+                    
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -148,7 +148,7 @@ while ($row = $result->fetch_assoc()) {
         </table>
     </div>
   <!-- Modal de Resumo do Projeto -->
-    <div id="projectSummaryModal" class="modal">
+    <div id="projectSummaryModal" class="modal" style="display:none;">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Detalhes da Inscrição</h2>
@@ -167,7 +167,7 @@ while ($row = $result->fetch_assoc()) {
     </div>
 
     <!-- Modal de Relatório Final -->
-<div id="relatorioModal" class="modal">
+<div id="relatorioModal" class="modal" style="display:none;">
   <div class="modal-content">
     <div class="modal-header">
       <h2>Enviar Relatório Final</h2>
@@ -183,10 +183,22 @@ while ($row = $result->fetch_assoc()) {
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn-primary" onclick="enviarRelatorioFinal()">Enviar</button>
+      <button type="button" onclick="enviarRelatorioFinal()">Enviar</button>
   
     </div>
   </div>
+</div>
+
+<!-- Modal de Sucesso ao Enviar Relatório -->
+<div id="modalRelatorioEnviado" class="modal" style="display:none;">
+    <div class="modal-content confirmation-content">
+        <div class="confirmation-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>Relatório enviado com sucesso!</h2>
+        <p>Seu relatório foi enviado e está aguardando análise.</p>
+        <button class="btn-primary" onclick="fecharModalRelatorioEnviado()">OK</button>
+    </div>
 </div>
 
     <div class="pagination" role="navigation" aria-label="Paginação">
@@ -206,5 +218,16 @@ while ($row = $result->fetch_assoc()) {
   <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="../Assets/acompanhamento.js"></script>
+
+                        <div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
 </body>
 </html>

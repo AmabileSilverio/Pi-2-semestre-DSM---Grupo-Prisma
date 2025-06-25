@@ -1,6 +1,7 @@
 <?php
 session_start();
 include(__DIR__ . '/../conexao.php');
+// Exemplo: buscar dados do coordenador com id guardado na sessão
 $id_coordenador = $_SESSION['id'] ?? null;
 
 if ($id_coordenador) {
@@ -48,7 +49,8 @@ if ($id_coordenador) {
   <!-- Barra de Navegação e Busca -->
   <nav class="navbar" role="navigation" aria-label="Menu principal">
     <div class="nav-links">
-      <a href="telaprincipalc.php">Home</a>
+      <a href="telaprincipalc.php">Início</a>
+      <a href="telaeditalcoordenador.php">Editais</a>
       <a href="listainscritos.php">Inscrições</a>
       <a href="painelestatistico.php">Acompanhamento</a>
       <a href="relatorios.php" class="active">Relatórios</a>
@@ -59,6 +61,11 @@ if ($id_coordenador) {
     <h1 class="section-title">Bem vindo, <?php echo htmlspecialchars($nome); ?>!</h1>
     
     <div class="cards-container">
+      <a href="telaeditalcoordenador.php" class="card">
+        <img src="../Assets/1.png" alt="Ícone de inscrição">
+        <div class="card-title">Editais</div>
+        <div class="card-description">Cadastre e analise os editais em aberto</div>
+      </a>
       <a href="listainscritos.php" class="card">
         <img src="../Assets/1.png" alt="Ícone de inscrição">
         <div class="card-title">Inscrições</div>
@@ -84,5 +91,19 @@ if ($id_coordenador) {
 
     </div>
   </footer>
+
+  <div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+
 </body>
 </html>

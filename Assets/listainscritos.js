@@ -99,7 +99,11 @@ function viewProjectSummary(id) {
                         <p><strong>Nome:</strong> ${inscricao.nome}</p>
                         <p><strong>E-mail:</strong> ${inscricao.email}</p>
                         <p><strong>RG:</strong> ${inscricao.rg}</p>
-                        <p><strong>Contrato de Trabalho:</strong> ${inscricao.tipo_contrato}</p>
+                        <p><strong>Contrato de Trabalho:</strong> ${
+    inscricao.tipo_contrato
+        ? inscricao.tipo_contrato.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+        : ''
+}</p>
                         <p><strong>Contato:</strong> ${inscricao.contato}</p>
                         <p><strong>Número de Matrícula:</strong> ${inscricao.matricula}</p>
                         <p><strong>Possui aula em outra Fatec:</strong> ${inscricao.aula_outra_fatec}</p>
@@ -108,7 +112,10 @@ function viewProjectSummary(id) {
 
                     <div class="project-info">
                         <h3>Informações do Projeto</h3>
+                        <p><strong>Nº do Edital:</strong> ${inscricao.id_edital || ''}</p>
                         <p><strong>Título:</strong> ${inscricao.titulo_projeto}</p>
+                        <p><strong>Data de Início do Edital:</strong> ${inscricao.data_inicio ? inscricao.data_inicio.split('-').reverse().join('/') : ''}</p>
+                        <p><strong>Data de Término do Edital:</strong> ${inscricao.data_termino ? inscricao.data_termino.split('-').reverse().join('/') : ''}</p>
                         <p><strong>Projeto de Interesse da Unidade:</strong> ${inscricao.projeto_unidade}</p>
                         <p><strong>Tipo HAE:</strong> ${formatarTipoHAE(inscricao.tipo_hae)}</p>
                         <p><strong>Status:</strong> ${inscricao.status || 'Pendente'}</p>
@@ -133,9 +140,12 @@ function viewProjectSummary(id) {
                         <h3>Arquivo do Projeto</h3>
                         <div class="arquivo-info">
                             <p><strong>Proposta de Projeto:</strong> 
-                                <a href="${inscricao.proposta_path}" class="btn-download" target="_blank">
-                                    <i class="fas fa-file-pdf"></i> Baixar PDF
-                                </a>
+                                ${inscricao.anexo 
+                                    ? `<a href="/Pi2/uploads_inscricoes/${inscricao.anexo}" class="btn-download" target="_blank">
+                                            <i class="fas fa-file-pdf"></i> Baixar PDF
+                                       </a>`
+                                    : '<span>Nenhum arquivo enviado</span>'
+                                }
                             </p>
                         </div>
                     </div>
@@ -161,7 +171,7 @@ function formatarHorarios(horarios) {
             if (tempos[0] && tempos[1]) {
                 resultado += `
                     <div class="horario-item">
-                        <span class="horario-dia">${dia}</span>
+                        <span class="horario-dia">${dia.charAt(0).toUpperCase() + dia.slice(1)}</span>
                         <span class="horario-periodo">${tempos[0]} até ${tempos[1]}</span>
                     </div>
                 `;
@@ -210,51 +220,54 @@ function printProjectSummary() {
 function downloadProjectSummary() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    
-    // Configurar fonte e tamanho
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
-    
-    // Pegar o conteúdo do modal
-    const sections = document.querySelectorAll('.project-section');
-    
-    let y = 20;
-    sections.forEach(section => {
-        const title = section.querySelector('h3').textContent;
-        const info = section.querySelector('.project-info');
-        const paragraphs = info.querySelectorAll('p');
-        
-        // Adicionar título da seção
-        doc.setFontSize(14);
-        doc.setTextColor(156, 0, 0); // Cor vermelha
-        doc.text(title, 20, y);
-        y += 10;
-        
-        // Adicionar informações
-        doc.setFontSize(12);
-        doc.setTextColor(0, 0, 0); // Cor preta
-        paragraphs.forEach(p => {
-            const text = p.textContent;
-            if (y > 270) { // Nova página se necessário
-                doc.addPage();
-                y = 20;
-            }
-            // Dividir texto longo em múltiplas linhas
-            const splitText = doc.splitTextToSize(text, 170);
-            doc.text(splitText, 20, y);
-            y += 7 * splitText.length;
-        });
-        
-        y += 10; // Espaço entre seções
-    });
-    
-    // Adicionar cabeçalho
+
+    // Cabeçalho
     doc.setFontSize(16);
     doc.setTextColor(156, 0, 0);
     doc.text("FATEC ITAPIRA", 105, 15, { align: "center" });
     doc.text("Detalhes da Inscrição", 105, 25, { align: "center" });
-    
-    // Adicionar rodapé
+
+    // Pega o conteúdo do modal
+    const content = document.getElementById('projectSummaryContent');
+    let y = 35;
+
+    // Para cada seção/título
+    content.querySelectorAll('h3').forEach(h3 => {
+        // Título em vermelho
+        doc.setFontSize(14);
+        doc.setTextColor(156, 0, 0);
+        doc.text(h3.textContent, 10, y);
+        y += 8;
+
+        // Pega os <p> e <div> irmãos até o próximo <h3> ou fim
+        let el = h3.nextElementSibling;
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        while (el && el.tagName !== 'H3') {
+            if (el.tagName === 'P') {
+                const lines = doc.splitTextToSize(el.textContent, 180);
+                doc.text(lines, 12, y);
+                y += lines.length * 7;
+            }
+            // Adiciona os horários do projeto
+            if (el.classList && el.classList.contains('horarios-list')) {
+                el.querySelectorAll('.horario-item').forEach(item => {
+                    const texto = item.innerText.trim();
+                    const lines = doc.splitTextToSize(texto, 180);
+                    doc.text(lines, 14, y);
+                    y += lines.length * 7;
+                });
+            }
+            el = el.nextElementSibling;
+        }
+        y += 3;
+        if (y > 270) {
+            doc.addPage();
+            y = 20;
+        }
+    });
+
+    // Rodapé
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
@@ -267,7 +280,7 @@ function downloadProjectSummary() {
             { align: "center" }
         );
     }
-    
+
     doc.save('detalhes_inscricao.pdf');
 }
 
@@ -302,10 +315,7 @@ function openApproveModal(id) {
                 document.getElementById('approveProjectUnit').textContent = inscricao.projeto_unidade;
                 document.getElementById('approveProjectHours').textContent = inscricao.horas_solicitadas;
                 
-                // Definir data mínima como hoje
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('startDate').min = today;
-                document.getElementById('endDate').min = today;
+        
                 
                 modal.style.display = 'flex';
             } else {
@@ -333,10 +343,10 @@ function approveProject() {
     const form = document.getElementById('approveProjectForm');
     const id = form.dataset.id;
     const approvedHours = document.getElementById('approvedHours').value;
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
     
-    if (!approvedHours || !startDate || !endDate) {
+    
+    
+    if (!approvedHours) {
         alert('Por favor, preencha todos os campos.');
         return;
     }
@@ -345,8 +355,7 @@ function approveProject() {
         id: id,
         status: 'Aprovado',
         horas_aprovadas: approvedHours,
-        data_inicio: startDate,
-        data_fim: endDate
+        
     };
     
     fetch('/Pi2/Controller/atualizar_status.php', {

@@ -26,6 +26,17 @@ if ($id_professor && $tipo) {
     $result = $stmt->get_result();
     $usuario = $result->fetch_assoc() ?: $usuario;
 }
+
+$id_edital = $_GET['id_edital'] ?? null;
+$edital = null;
+
+if ($id_edital) {
+    $stmt = $conn->prepare("SELECT * FROM editais_hae WHERE id = ?");
+    $stmt->bind_param("i", $id_edital);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $edital = $result->fetch_assoc();
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -63,11 +74,10 @@ if ($id_professor && $tipo) {
     <!-- Barra de Navegação e Busca -->
     <nav class="navbar" role="navigation" aria-label="Menu principal">
       <div class="nav-links">
-      <a href="telaprincipal.php">Home</a>
-      <a href="formulario.php">Inscrições</a>
-      <a href="telaacompanhamento.php">Acompanhamento</a>
-      <a href="relatorios_professor.php" class="active">Relatórios</a>
+       <a href="telaprincipal.php">Início</a>
       <a href="telaedital.php">Edital</a>
+      <a href="telaacompanhamento.php">Inscrições</a>
+      <a href="relatorios_professor.php">Relatórios</a>
       <a href="telaagenda.php">Agenda</a>
     </div>
     </nav>
@@ -173,24 +183,25 @@ if ($id_professor && $tipo) {
         </div>
     </div>
 
-           <div class="form-step" id="step3" data-step="3">
-        <h2>Projeto</h2>
+    <!-- Etapa 3: Informações do Projeto -->
+     <div class="form-step" id="step3" data-step="3">
+    <h2>Projeto</h2>
+    <div class="form-group">
+        <label for="id_edital">Nº do Edital:</label>
+        <input type="text" id="id_edital" name="id_edital"
+            value="<?php echo $edital ? htmlspecialchars($edital['id']) : ''; ?>" readonly>
+    </div>
+           
         <div class="form-group">
-            <label for="unidade">Projeto de Interesse da Unidade:</label>
-            <select name="unidade" id="unidade" required>
-                <option value="">Selecione...</option>
-                <option value="Americana">Americana</option>
-                <option value="Araras">Araras</option>
-                <option value="Campinas">Campinas</option>
-                <option value="Itapira">Itapira</option>
-                <option value="Mogi Mirim">Mogi Mirim</option>
-                <option value="Santo André">Santo André</option>
-            </select>
+            <label for="projeto_unidade">Projeto de Interesse da Unidade:</label>
+            <input type="text" id="projeto_unidade" name="projeto_unidade"
+                value="<?php echo $edital ? htmlspecialchars($edital['unidade']) : ''; ?>" readonly>
         </div>
 
         <div class="form-group">
-            <label for="titulo">Título do projeto de interesse conforme Edital:</label>
-            <input type="text" id="titulo" name="titulo" placeholder="Digite o título do projeto conforme edital">
+            <label for="titulo_projeto">Título do projeto de interesse conforme Edital:</label>
+            <input type="text" id="titulo_projeto" name="titulo_projeto"
+                value="<?php echo $edital ? htmlspecialchars($edital['titulo']) : ''; ?>" readonly>
         </div>
 
         <div class="form-group">
@@ -269,7 +280,7 @@ if ($id_professor && $tipo) {
         </div>
         <div class="form-group">
             <label for="proposta">Anexar Proposta de Projeto (PDF):</label>
-            <input type="file" id="proposta" name="proposta" accept=".pdf" required>
+            <input type="file" id="anexo" name="anexo" accept=".pdf" required>
         </div>
     </div>
 
@@ -393,5 +404,17 @@ if ($id_professor && $tipo) {
             <button class="btn-primary" onclick="closeModal()">OK</button>
         </div>
     </div>
+
+    <div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
 </body>
 </html>

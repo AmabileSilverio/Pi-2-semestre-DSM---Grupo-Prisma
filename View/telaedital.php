@@ -1,6 +1,7 @@
 <?php
 session_start();
 include(__DIR__ . '/../conexao.php');
+
 // Buscar dados do professor com id guardado na sessão
 $id_professor = $_SESSION['id'] ?? null;
 
@@ -14,6 +15,15 @@ if ($id_professor) {
     $nome = $professor['nome'] ?? 'Usuário';
 } else {
     $nome = 'Usuário';
+}
+
+// Buscar todos os editais cadastrados
+$sql = "SELECT * FROM editais_hae ORDER BY data_criacao DESC";
+$result = $conn->query($sql);
+
+$editais = [];
+while ($row = $result->fetch_assoc()) {
+    $editais[] = $row;
 }
 ?>
 
@@ -49,75 +59,51 @@ if ($id_professor) {
   <!-- Barra de Navegação e Busca -->
   <nav class="navbar" role="navigation" aria-label="Menu principal">
     <div class="nav-links">
-      <a href="telaprincipal.php" aria-current="page">Home</a>
-      <a href="formulario.php">Inscrições</a>
-      <a href="telaacompanhamento.php">Acompanhamento</a>
-      <a href="relatorios.php" class="active">Relatórios</a>
+      <a href="telaprincipal.php">Início</a>
       <a href="telaedital.php">Edital</a>
+      <a href="telaacompanhamento.php">Inscrições</a>
+      <a href="relatorios_professor.php">Relatórios</a>
       <a href="telaagenda.php">Agenda</a>
     </div>
   </nav>
 
   <div class="container">
-    <div class="section-title">Edital</div>
-    <div class="filters">
-      <div class="filter">
-        <label for="unid">Unidade:</label>
-        <select name="unidade" id="unid">
-          <option value="disabled selected">Selecione...</option>
-          <option value="unidade_americana">Americana</option>
-          <option value="unidade_araras">Araras</option>
-          <option value="unidade_campinas">Campinas</option>
-          <option value="unidade_itapira">Itapira</option>
-          <option value="unidade_mogi_mirim">Mogi Mirim</option>
-          <option value="unidade_santo_andre">Santo André</option>
-        </select>
-      </div>
-      <div class="filter">
-        <label for="tip">Tipo HAE</label>
-        <select name="tipo" id="tip">
-          <option value="disabled selected">Selecione...</option>
-          <option value="estagio_supervisionado">Estágio Supervisionado</option>
-          <option value="trabalho_graduacao">Trabalho de Graduação</option>
-          <option value="iniciacao_cientifica">Iniciação Científica</option>
-          <option value="divulgacao_cursos">Divulgação dos Cursos</option>
-          <option value="administracao_academica">Administração Acadêmica</option>
-          <option value="enade">Preparação para ENADE</option>
-        </select>
-      </div>
-      <div class="filter">
-        <label for="numero">Número de inscrição</label>
-        <input type="text" id="numero" placeholder="Digite o número de inscrição">
-      </div>
-      <div class="filter">
-        <label for="numero">Ano</label>
-        <input type="text" id="numero" placeholder="Digite o número de inscrição">
-      </div>
-    </div>
-    <table>
-      <thead>
+    <h2 class="section-title">Editais Disponíveis</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Título</th>
+      <th>Unidade</th>
+      <th>Data de Início</th>
+      <th>Data de Término</th>
+      <th>Semestre</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php if (empty($editais)): ?>
+      <tr><td colspan="5">Nenhum edital disponível.</td></tr>
+    <?php else: ?>
+      <?php foreach ($editais as $edital): ?>
         <tr>
-          <th>Unidade</th>
-          <th>Nº inscrição</th>
-          <th>Tipo HAE</th>
-          <th>Professor</th>
-          <th>Número da Matrícula</th>
-          <th>Situação</th>
-          <th>Ano</th>
+          <td><?php echo htmlspecialchars($edital['titulo']); ?></td>
+          <td><?php echo htmlspecialchars($edital['unidade']); ?></td>
+          <td><?php echo date('d/m/Y', strtotime($edital['data_inicio'])); ?></td>
+          <td><?php echo date('d/m/Y', strtotime($edital['data_termino'])); ?></td>
+          <td><?php echo htmlspecialchars($edital['semestre']); ?></td>
+          <td>
+            <a href="formulario.php?id_edital=<?php echo $edital['id']; ?>" class="btn-primary" style="padding:6px 16px; text-decoration:none;">
+              Inscrever-se
+            </a>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </tbody>
+</table>
     <div class="pagination">
       <button>«</button>
       <button class="active">1</button>
-      <button>2</button>
-      <button>3</button>
-      <button>4</button>
-      <button>5</button>
-      <button>...</button>
-      <button>50</button>
       <button>»</button>
     </div>
   </div>
@@ -127,5 +113,19 @@ if ($id_professor) {
       <img src="../Assets/Logo prisma2.png" alt="Logo Governo do Estado de São Paulo">
       <p>Desenvolvido por Prisma</p>
   </footer>
+
+  <div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+
 </body>
 </html>

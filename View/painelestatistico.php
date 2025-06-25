@@ -1,6 +1,7 @@
 <?php
 session_start();
 include(__DIR__ . '/../conexao.php');
+// Exemplo: buscar dados do coordenador com id guardado na sessão
 $id_coordenador = $_SESSION['id'] ?? null;
 
 if ($id_coordenador) {
@@ -48,10 +49,11 @@ if ($id_coordenador) {
   <!-- Barra de Navegação e Busca -->
   <nav class="navbar" role="navigation" aria-label="Menu principal">
     <div class="nav-links">
-        <a href="telaprincipalc.php">Home</a>
-        <a href="listainscritos.php">Inscrições</a>
-        <a href="painelestatistico.php">Acompanhamento</a>
-        <a href="relatorios.php" class="active">Relatórios</a>
+      <a href="telaprincipalc.php">Início</a>
+      <a href="telaeditalcoordenador.php">Editais</a>
+      <a href="listainscritos.php">Inscrições</a>
+      <a href="painelestatistico.php">Acompanhamento</a>
+      <a href="relatorios.php" class="active">Relatórios</a>
       </div>
   </nav>
   <main class="container">
@@ -146,5 +148,17 @@ if ($id_coordenador) {
     </div>
   </footer>
   <script src="../Assets/painelestatistico.js"></script>
+
+  <div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
 </body>
 </html> 

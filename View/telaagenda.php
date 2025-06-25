@@ -54,11 +54,10 @@ $nome = $professor['nome'] ?? 'Usuário';
   <!-- Barra de Navegação e Busca -->
   <nav class="navbar" role="navigation" aria-label="Menu principal">
  <div class="nav-links">
-      <a href="telaprincipal.php">Home</a>
-      <a href="formulario.php">Inscrições</a>
-      <a href="telaacompanhamento.php">Acompanhamento</a>
-      <a href="relatorios_professor.php" class="active">Relatórios</a>
+       <a href="telaprincipal.php">Início</a>
       <a href="telaedital.php">Edital</a>
+      <a href="telaacompanhamento.php">Inscrições</a>
+      <a href="relatorios_professor.php">Relatórios</a>
       <a href="telaagenda.php">Agenda</a>
     </div>
   </nav>
@@ -112,8 +111,13 @@ $nome = $professor['nome'] ?? 'Usuário';
   <!-- Modal de Detalhes do Projeto -->
   <div id="projectDetailsModal" class="modal">
     <div class="modal-content">
-      <span class="close">&times;</span>
+      <div class="modal-header">
+        <h2>Detalhes do Projeto</h2>
+        <div style="height:4px; background:#9c0000; margin-top:8px; margin-bottom:16px; border-radius:2px;"></div>
+        <span class="close" onclick="closeProjectDetails()">&times;</span>
+      </div>
       <div id="projectDetailsContent"></div>
+      <!-- ...restante do modal... -->
     </div>
   </div>
 
@@ -123,5 +127,19 @@ $nome = $professor['nome'] ?? 'Usuário';
       <p>Desenvolvido por Prisma</p>
     </div>
   </footer>
+
+  <div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+
 </body>
-</html> 
+</html>

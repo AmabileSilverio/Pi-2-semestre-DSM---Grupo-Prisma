@@ -56,7 +56,8 @@ while ($row = $result->fetch_assoc()) {
   </div>
   <nav class="navbar" role="navigation" aria-label="Menu principal">
     <div class="nav-links">
-      <a href="telaprincipalc.php">Home</a>
+      <a href="telaprincipalc.php">Início</a>
+      <a href="telaeditalcoordenador.php">Editais</a>
       <a href="listainscritos.php">Inscrições</a>
       <a href="painelestatistico.php">Acompanhamento</a>
       <a href="relatorios.php" class="active">Relatórios</a>
@@ -81,7 +82,7 @@ while ($row = $result->fetch_assoc()) {
   <tr>
     <td><?php echo htmlspecialchars($relatorio['id_inscricao']); ?></td>
     <td><?php echo htmlspecialchars($relatorio['nome_professor']); ?></td>
-    <td><?php echo htmlspecialchars($relatorio['tipo_hae']); ?></td>
+    <td><?php echo formatarTipoHAE($relatorio['tipo_hae']); ?></td>
     <td>
       <?php
         // Gera a classe CSS baseada no status
@@ -94,7 +95,7 @@ while ($row = $result->fetch_assoc()) {
    <td>
   <button class="btn-action" onclick="abrirModalVerRelatorio(
     '<?php echo htmlspecialchars(addslashes($relatorio['descricao'])); ?>',
-    '<?php echo $relatorio['anexo'] ? '../uploads_relatorios/' . urlencode($relatorio['anexo']) : ''; ?>',
+    '<?php echo $relatorio['anexo'] ? '../uploads_relatorios/' . rawurlencode($relatorio['anexo']) : ''; ?>',
     <?php echo $relatorio['id']; ?>
   )">
     <i class="fas fa-eye"></i> Ver Relatório
@@ -155,6 +156,29 @@ while ($row = $result->fetch_assoc()) {
     </div>
   </div>
 
+  <!-- Modal de Relatório Aprovado pelo Coordenador -->
+<div id="modalRelatorioAprovado" class="modal">
+    <div class="modal-content confirmation-content">
+        <div class="confirmation-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>Relatório aprovado com sucesso!</h2>
+        <button class="btn-primary" onclick="fecharModalRelatorioAprovado()">OK</button>
+    </div>
+</div>
+
+<!-- Modal de Correção Solicitada -->
+<div id="modalCorrecaoSolicitada" class="modal">
+    <div class="modal-content confirmation-content">
+        <div class="confirmation-icon">
+            <i class="fas fa-exclamation-circle" style="color:#ff9800;"></i>
+        </div>
+        <h2>Correção solicitada!</h2>
+        <p>O relatório foi devolvido para correção do professor.</p>
+        <button class="btn-primary" onclick="fecharModalCorrecaoSolicitada()">OK</button>
+    </div>
+</div>
+
   <footer class="footer">
     <div class="footer-content">
       <img src="../Assets/Logo prisma2.png" alt="Logo Governo do Estado de São Paulo">
@@ -162,5 +186,24 @@ while ($row = $result->fetch_assoc()) {
     </div>
   </footer>
    <script src="../Assets/relatorio.js"></script>
+
+  <div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+<?php
+function formatarTipoHAE($tipo) {
+    return ucwords(str_replace('_', ' ', $tipo));
+}
+?>
+
 </body>
 </html>

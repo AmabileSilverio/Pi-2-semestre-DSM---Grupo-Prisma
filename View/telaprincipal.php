@@ -48,11 +48,10 @@ if ($id_professor) {
   <!-- Barra de Navegação e Busca -->
   <nav class="navbar" role="navigation" aria-label="Menu principal">
     <div class="nav-links">
-      <a href="telaprincipal.php">Home</a>
-      <a href="formulario.php">Inscrições</a>
-      <a href="telaacompanhamento.php">Acompanhamento</a>
-      <a href="relatorios_professor.php" class="active">Relatórios</a>
+       <a href="telaprincipal.php">Início</a>
       <a href="telaedital.php">Edital</a>
+      <a href="telaacompanhamento.php">Inscrições</a>
+      <a href="relatorios_professor.php">Relatórios</a>
       <a href="telaagenda.php">Agenda</a>
     </div>
   </nav>
@@ -60,14 +59,13 @@ if ($id_professor) {
     <h1 class="section-title">Bem vindo, <?php echo htmlspecialchars($nome); ?>!</h1>
     
     <div class="cards-container">
-      <a href="formulario.php" class="card">
-        <img src="../Assets/1.png" alt="Ícone de inscrição">
-        <div class="card-title">Inscrição</div>
-        <div class="card-description">Fazer inscrição</div>
+       <a href="telaedital.php" class="card">
+        <img src="../Assets/4.png" alt="Ícone de edital">
+        <div class="card-title">Edital</div>
+        <div class="card-description">Acompanhe a lista de editais em aberto</div>
       </a>
-
       <a href="telaacompanhamento.php" class="card">
-        <img src="../Assets/2.png" alt="Ícone de acompanhamento">
+        <img src="../Assets/acomp.png" alt="Ícone de acompanhamento">
         <div class="card-title">Acompanhamento</div>
         <div class="card-description">Acompanhe o progresso da sua HAE</div>
       </a>
@@ -76,13 +74,6 @@ if ($id_professor) {
         <img src="../Assets/2.png" alt="Ícone de acompanhamento">
         <div class="card-title">Relatórios</div>
         <div class="card-description">Acompanhe o progresso dos seus relatórios</div>
-      </a>
-
-
-      <a href="telaedital.html" class="card">
-        <img src="../Assets/4.png" alt="Ícone de edital">
-        <div class="card-title">Edital</div>
-        <div class="card-description">Acompanhe a lista de inscrições aprovadas e deferidas</div>
       </a>
 
       <a href="telaagenda.php" class="card">
@@ -100,5 +91,19 @@ if ($id_professor) {
 
     </div>
   </footer>
+
+  <div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+
 </body>
 </html>

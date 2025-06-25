@@ -52,11 +52,10 @@ $result = $stmt->get_result();
   </div>
   <nav class="navbar" role="navigation" aria-label="Menu principal">
      <div class="nav-links">
-      <a href="telaprincipal.php">Home</a>
-      <a href="formulario.php">Inscrições</a>
-      <a href="telaacompanhamento.php">Acompanhamento</a>
-      <a href="relatorios_professor.php" class="active">Relatórios</a>
+     <a href="telaprincipal.php">Início</a>
       <a href="telaedital.php">Edital</a>
+      <a href="telaacompanhamento.php">Inscrições</a>
+      <a href="relatorios_professor.php">Relatórios</a>
       <a href="telaagenda.php">Agenda</a>
     </div>
     </div>
@@ -83,7 +82,7 @@ $result = $stmt->get_result();
               <td><?php echo nl2br(htmlspecialchars($relatorio['descricao'])); ?></td>
               <td>
                 <?php if ($relatorio['anexo']): ?>
-                  <a href="../uploads_relatorios/<?php echo urlencode($relatorio['anexo']); ?>" target="_blank">Baixar</a>
+                  <a href="/Pi2/uploads_relatorios/<?php echo rawurlencode($relatorio['anexo']); ?>" target="_blank">Baixar</a>
                 <?php else: ?>
                   -
                 <?php endif; ?>
@@ -160,6 +159,30 @@ $result = $stmt->get_result();
       </div>
     </div>
   </div>
+
+  <!-- Modal de Confirmação de Envio de Relatório -->
+  <div id="modalConfirmacaoRelatorio" class="modal">
+    <div class="modal-content confirmation-content">
+      <div class="confirmation-icon">
+        <i class="fas fa-check-circle" style="font-size:48px;color:#28a745;"></i>
+      </div>
+      <h2>Relatório enviado!</h2>
+      <p>Seu relatório final foi enviado com sucesso.</p>
+      <button class="btn-primary" onclick="fecharModalConfirmacaoRelatorio()">OK</button>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação de Reenvio de Relatório -->
+  <div id="modalRelatorioReenviado" class="modal">
+    <div class="modal-content confirmation-content">
+        <div class="confirmation-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>Relatório reenviado com sucesso!</h2>
+        <button class="btn-primary" onclick="fecharModalRelatorioReenviado()">OK</button>
+    </div>
+  </div>
+
   <footer class="footer">
     <div class="footer-content">
       <img src="../Assets/Logo prisma2.png" alt="Logo Governo do Estado de São Paulo">
@@ -167,5 +190,19 @@ $result = $stmt->get_result();
     </div>
   </footer>
    <script src="../Assets/acompanhamento.js"></script>
+
+     <div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+
 </body>
 </html>

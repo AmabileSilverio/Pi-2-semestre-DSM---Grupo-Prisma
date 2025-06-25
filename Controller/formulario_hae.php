@@ -26,7 +26,7 @@ try {
     $campos_obrigatorios = [
         'nome', 'mail', 'tipo_contrato', 'rg', 'contato', 'matricula', 
         'aula_fatec', 'horas_disponiveis', 'tipo_hae', 'horas_solicitadas',
-        'unidade', 'titulo', 'TituloP', 'metodologia', 'descricao', 'curso'
+        'TituloP', 'metodologia', 'descricao', 'curso', 'id_edital'
     ];
     foreach ($campos_obrigatorios as $campo) {
         if (!isset($_POST[$campo]) || empty($_POST[$campo])) {
@@ -45,8 +45,6 @@ try {
     $horas_disponiveis = $_POST['horas_disponiveis'];
     $tipo_hae = $_POST['tipo_hae'];
     $horas_solicitadas = $_POST['horas_solicitadas'];
-    $projeto_unidade = $_POST['unidade'];
-    $titulo_editado = $_POST['titulo'];
     $titulo_projeto = $_POST['TituloP'];
     $metodologia = $_POST['metodologia'];
     $descricao = $_POST['descricao'];
@@ -104,23 +102,38 @@ try {
         move_uploaded_file($_FILES['anexo']['tmp_name'], $anexo_caminho);
     }
 
+    error_log("Nome do anexo: " . $anexo_nome);
+
+    // Buscar unidade do edital
+    $id_edital = $_POST['id_edital'];
+    $stmt = $conn->prepare("SELECT unidade, titulo FROM editais_hae WHERE id = ?");
+    $stmt->bind_param("i", $id_edital);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $edital = $result->fetch_assoc();
+    if (!$edital) {
+        throw new Exception("Edital não encontrado.");
+    }
+    $projeto_unidade = $edital['unidade'];
+    $titulo_editado = $edital['titulo'];
+
     // Inserir no banco
     $stmt = $conn->prepare("INSERT INTO inscricoes_hae (
         nome, email, tipo_contrato, rg, contato, matricula, aula_outra_fatec, 
         horas_disponiveis, tipo_hae, horas_solicitadas, projeto_unidade, 
         titulo_editado, titulo_projeto, metodologia, descricao, dias, horarios, 
-        proposta_nome, proposta_path, aceite_termos, id_professor, curso, anexo
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        proposta_nome, proposta_path, aceite_termos, id_professor, curso, anexo, id_edital
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
     if (!$stmt) {
         throw new Exception("Erro na preparação da query: " . $conn->error);
     }
 
-    $stmt->bind_param("sssssssssssssssssssisss",
+    $stmt->bind_param("sssssssssssssssssssiissi",
         $nome, $email, $tipo_contrato, $rg, $contato, $matricula,
         $aula_outra_fatec, $horas_disponiveis, $tipo_hae, $horas_solicitadas,
         $projeto_unidade, $titulo_editado, $titulo_projeto, $metodologia, $descricao,
-        $dias, $horarios, $proposta_nome, $proposta_path, $aceite_termos, $id_professor, $curso, $anexo_nome
+        $dias, $horarios, $proposta_nome, $proposta_path, $aceite_termos, $id_professor, $curso, $anexo_nome, $id_edital
     );
 
     if (!$stmt->execute()) {
@@ -157,4 +170,5 @@ try {
         $conn->close();
     }
 }
+
 ?>

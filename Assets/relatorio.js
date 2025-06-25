@@ -32,9 +32,9 @@ function aprovarRelatorio() {
   .then(r => r.json())
   .then(data => {
     if (data.status === 'ok') {
-      alert('Relatório aprovado!');
       fecharAnaliseRelatorioModal();
-      location.reload();
+      abrirModalRelatorioAprovado();
+      // Remova o location.reload() daqui, coloque no fecharModalRelatorioAprovado se quiser recarregar depois do OK
     } else {
       alert('Erro: ' + data.mensagem);
     }
@@ -65,19 +65,20 @@ function solicitarCorrecaoRelatorio() {
   });
 }
 
-function abrirModalVerRelatorio(descricao, anexoUrl, relatorioId) {
-  document.getElementById('descricaoRelatorioView').textContent = descricao;
-  const link = document.getElementById('anexoRelatorioView');
-  if (anexoUrl) {
-    link.href = anexoUrl;
-    link.style.display = 'inline';
-  } else {
-    link.href = '#';
-    link.style.display = 'none';
-  }
-  document.getElementById('relatorioIdView').value = relatorioId;
-  document.getElementById('parecerCoordenadorView').value = '';
-  document.getElementById('verRelatorioModal').style.display = 'flex';
+function abrirModalVerRelatorio(descricao, anexo, id) {
+    document.getElementById('descricaoRelatorioView').textContent = descricao;
+    const link = document.getElementById('anexoRelatorioView');
+    if (anexo) {
+        link.href = anexo;
+        link.textContent = 'Baixar';
+        link.style.display = '';
+    } else {
+        link.href = '#';
+        link.textContent = 'Nenhum anexo enviado';
+        link.style.display = '';
+    }
+    document.getElementById('relatorioIdView').value = id;
+    document.getElementById('verRelatorioModal').style.display = 'flex';
 }
 
 function fecharModalVerRelatorio() {
@@ -99,9 +100,9 @@ function aprovarRelatorioView() {
   .then(r => r.json())
   .then(data => {
     if (data.status === 'ok') {
-      alert('Relatório aprovado!');
       fecharModalVerRelatorio();
-      location.reload();
+      abrirModalRelatorioAprovado();
+      // location.reload() já está no fecharModalCorrecaoSolicitada
     } else {
       alert('Erro: ' + data.mensagem);
     }
@@ -123,11 +124,32 @@ function solicitarCorrecaoRelatorioView() {
   .then(r => r.json())
   .then(data => {
     if (data.status === 'ok') {
-      alert('Correção solicitada!');
       fecharModalVerRelatorio();
-      location.reload();
+      abrirModalCorrecaoSolicitada();
+      // location.reload() já está no fecharModalCorrecaoSolicitada
     } else {
       alert('Erro: ' + data.mensagem);
     }
   });
+}
+
+function formatarTipoHAE(tipo) {
+    if (!tipo) return '';
+    return tipo.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
+
+function abrirModalRelatorioAprovado() {
+  document.getElementById('modalRelatorioAprovado').style.display = 'flex';
+}
+function fecharModalRelatorioAprovado() {
+  document.getElementById('modalRelatorioAprovado').style.display = 'none';
+  location.reload(); // recarrega a página ao fechar, se desejar
+}
+
+function abrirModalCorrecaoSolicitada() {
+  document.getElementById('modalCorrecaoSolicitada').style.display = 'flex';
+}
+function fecharModalCorrecaoSolicitada() {
+  document.getElementById('modalCorrecaoSolicitada').style.display = 'none';
+  location.reload(); // recarrega a página ao fechar, se desejar
 }
